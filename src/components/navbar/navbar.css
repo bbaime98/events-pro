@@ -1,0 +1,14 @@
+.navbar {
+  background-color: rgb(241, 7, 85);
+}
+.nav-item {
+  color: rgb(16, 83, 95);
+  font-size: 1.6rem;
+}
+
+.nav-item:hover,
+.nav-item:active,
+.nav-item.active {
+  text-decoration: none;
+  color: white;
+}
