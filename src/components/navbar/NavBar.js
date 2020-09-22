@@ -44,11 +44,19 @@ const NavBar = (props) => {
                     </NavLink>
                   </NavItem>
                   {context.token && (
-                    <NavItem>
-                      <NavLink className="nav-item" to="/bookings">
-                        Bookings
-                      </NavLink>
-                    </NavItem>
+                    <>
+                      <NavItem>
+                        <NavLink className="nav-item" to="/bookings">
+                          Bookings
+                        </NavLink>
+                      </NavItem>
+                      <NavItem
+                        onClick={context.logout}
+                        style={{cursor: "pointer"}}
+                      >
+                        Logout
+                      </NavItem>
+                    </>
                   )}
                 </Nav>
               </Collapse>
