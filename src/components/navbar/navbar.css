@@ -2,9 +2,16 @@
   background-color: rgb(241, 7, 85);
 }
 .nav-item {
-  color: rgb(16, 83, 95);
+  color: rgb(3, 62, 73);
+  /* color: rgb(16, 83, 95); */
   font-size: 1.6rem;
+  /* background: rgba(241, 186, 7, 0.822); */
 }
+/* .nav-item a {
+  background: rgba(241, 186, 7, 0.822);
+  padding: 0px 3px !important;
+  border-radius: 5px;
+} */
 
 .nav-item:hover,
 .nav-item:active,
