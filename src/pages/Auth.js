@@ -1,15 +1,19 @@
 import React, {Component} from "react"
 import {Form, FormGroup, Label, Input, Container, Row, Col} from "reactstrap"
 import "./auth.css"
+import AuthContext from "../context/authContext"
 
 class Signup extends Component {
+  state = {
+    isLogin: true,
+  }
+
+  static contextType = AuthContext
+
   constructor(props) {
     super(props)
     this.emailEl = React.createRef()
     this.passwordEl = React.createRef()
-  }
-  state = {
-    isLogin: true,
   }
   submitHandler = (event) => {
     event.preventDefault()
@@ -36,8 +40,7 @@ class Signup extends Component {
         createUser(userInput: {email: "${email}", password: "${password}"}){
           _id, email
         }
-      }
-      `,
+      }`,
       }
     }
 
@@ -55,7 +58,13 @@ class Signup extends Component {
         return res.json()
       })
       .then((resData) => {
-        console.log("DATATA", resData)
+        if (resData.data.login.token) {
+          this.context.login(
+            resData.data.login.token,
+            resData.data.login.userId,
+            resData.data.login.tokenExpiration
+          )
+        }
       })
       .catch((err) => {
         console.log(err)
@@ -74,6 +83,19 @@ class Signup extends Component {
           <Col lg="4" sm="0" />
           <Col xs="12" lg="5" className="shadow-lg">
             <Form onSubmit={this.submitHandler}>
+              {!this.state.isLogin ? (
+                <FormGroup className="mt-4">
+                  <Label for="exampleEmail">Full Name</Label>
+                  <Input
+                    type="text"
+                    name="name"
+                    placeholder="Enter full name"
+                    // innerRef={this.emailEl}
+                  />
+                </FormGroup>
+              ) : (
+                ""
+              )}
               <FormGroup className="mt-4">
                 <Label for="exampleEmail">Email</Label>
                 <Input
