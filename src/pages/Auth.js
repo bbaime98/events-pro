@@ -2,7 +2,7 @@ import React, {Component} from "react"
 import {Form, FormGroup, Label, Input, Container, Row, Col} from "reactstrap"
 import "./auth.css"
 import AuthContext from "../context/authContext"
-
+import image from "../event.jpg"
 class Signup extends Component {
   state = {
     isLogin: true,
@@ -44,7 +44,7 @@ class Signup extends Component {
       }
     }
 
-    fetch("http://localhost:7000/graphql", {
+    fetch("https://events-pro.herokuapp.com/graphql", {
       method: "POST",
       body: JSON.stringify(requestBody),
       headers: {
@@ -78,61 +78,71 @@ class Signup extends Component {
   }
   render() {
     return (
-      <Container className="mt-5">
-        <Row>
-          <Col lg="4" sm="0" />
-          <Col xs="12" lg="5" className="shadow-lg">
-            <Form onSubmit={this.submitHandler}>
-              {!this.state.isLogin ? (
+      <>
+        <Container className="mt-5 ">
+          <Row>
+            {/* <div className="backgroud-image"></div> */}
+            <Col lg="7" sm="0" className="mt-5">
+              <div>
+                <h1 style={{color: "rgb(6, 158, 218)"}}>CREATE AND</h1>
+                <h1 style={{color: "rgb(241, 7, 85)"}}>SHARE YOUR</h1>
+                <h1 style={{color: "rgb(3, 62, 73)"}}>EVENTS EASILY</h1>
+              </div>
+            </Col>
+            {/* <Col lg="4" sm="0" /> */}
+            <Col xs="12" lg="5" className="shadow-lg form_container mt-5">
+              <Form onSubmit={this.submitHandler}>
+                {!this.state.isLogin ? (
+                  <FormGroup className="mt-4">
+                    <Label for="exampleEmail">Full Name</Label>
+                    <Input
+                      type="text"
+                      name="name"
+                      placeholder="Enter full name"
+                      // innerRef={this.emailEl}
+                    />
+                  </FormGroup>
+                ) : (
+                  ""
+                )}
                 <FormGroup className="mt-4">
-                  <Label for="exampleEmail">Full Name</Label>
+                  <Label for="exampleEmail">Email</Label>
                   <Input
-                    type="text"
-                    name="name"
-                    placeholder="Enter full name"
-                    // innerRef={this.emailEl}
+                    type="email"
+                    name="email"
+                    id="exampleEmail"
+                    placeholder="Enter email"
+                    innerRef={this.emailEl}
                   />
                 </FormGroup>
-              ) : (
-                ""
-              )}
-              <FormGroup className="mt-4">
-                <Label for="exampleEmail">Email</Label>
-                <Input
-                  type="email"
-                  name="email"
-                  id="exampleEmail"
-                  placeholder="Enter email"
-                  innerRef={this.emailEl}
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="examplePassword">Password</Label>
-                <Input
-                  type="password"
-                  name="password"
-                  id="examplePassword"
-                  placeholder="Enter password"
-                  innerRef={this.passwordEl}
-                />
-              </FormGroup>
-              <div className="text-right buttons mb-4">
-                <button type="submit">
-                  {this.state.isLogin ? "Login" : "Signup"}
-                </button>
-                <button
-                  className="button-2"
-                  type="button"
-                  onClick={this.switchAuthHandler}
-                >
-                  {this.state.isLogin ? "Signup" : "Login"} instead
-                </button>
-              </div>
-            </Form>
-          </Col>
-          <Col lg="4" sm="0" />
-        </Row>
-      </Container>
+                <FormGroup>
+                  <Label for="examplePassword">Password</Label>
+                  <Input
+                    type="password"
+                    name="password"
+                    id="examplePassword"
+                    placeholder="Enter password"
+                    innerRef={this.passwordEl}
+                  />
+                </FormGroup>
+                <div className="text-right buttons mb-4">
+                  <button type="submit">
+                    {this.state.isLogin ? "Login" : "Signup"}
+                  </button>
+                  <button
+                    className="button-2"
+                    type="button"
+                    onClick={this.switchAuthHandler}
+                  >
+                    {this.state.isLogin ? "Signup" : "Login"} instead
+                  </button>
+                </div>
+              </Form>
+            </Col>
+          </Row>
+        </Container>
+        {/* </div> */}
+      </>
     )
   }
 }
