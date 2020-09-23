@@ -13,11 +13,15 @@ import "./events.css"
 import Modal from "../components/modal/Modal"
 import Backdrop from "../components/backdrop/Backdrop"
 import AuthContext from "../context/authContext"
+import EventLists from "../components/Events/EventLists"
+import Spinner from "../components/spinner/spinner"
 
 export default class EventsPage extends Component {
   state = {
     showModal: false,
     events: [],
+    isLoading: false,
+    selectedEvent: null,
   }
   static contextType = AuthContext
   constructor(props) {
@@ -35,10 +39,9 @@ export default class EventsPage extends Component {
     this.setState({showModal: true})
   }
   handleCancel = () => {
-    this.setState({showModal: false})
+    this.setState({showModal: false, selectedEvent: null})
   }
   handleConfirm = () => {
-    this.setState({showModal: false})
     const title = this.titleRef.current.value
     const price = +this.priceRef.current.value
     const date = this.dateRef.current.value
@@ -54,15 +57,15 @@ export default class EventsPage extends Component {
     const event = {title, price, date, description}
     const requestBody = {
       query: `
-      mutation{
-        createEvent(eventInput: {title: "${title}", description: "${description}", price: ${price}, date: "${date}" } ){
-          _id, title, date, description, price, creator{ _id, email}
-        }
-      }`,
+        mutation{
+          createEvent(eventInput: {title: "${title}", description: "${description}", price: ${price}, date: "${date}" } ){
+            _id, title, date, description, price
+          }
+        }`,
     }
 
     const token = this.context.token
-    fetch("https://events-pro.herokuapp.com/graphql", {
+    fetch("http://localhost:7000/graphql", {
       method: "POST",
       body: JSON.stringify(requestBody),
       headers: {
@@ -77,25 +80,41 @@ export default class EventsPage extends Component {
         return res.json()
       })
       .then((resData) => {
-        this.fetchEvents()
+        // this.fetchEvents()
+        this.setState((prevState) => {
+          const updatedEvents = [...prevState.events]
+          updatedEvents.push({
+            _id: resData.data.createEvent._id,
+            title: resData.data.createEvent.title,
+            description: resData.data.createEvent.description,
+            date: resData.data.createEvent.date,
+            price: resData.data.createEvent.price,
+            creator: {
+              _id: this.context.userId,
+            },
+          })
+          return {events: updatedEvents}
+        })
       })
       .catch((err) => {
         console.log(err)
       })
+    this.setState({showModal: false})
   }
 
   fetchEvents() {
+    this.setState({isLoading: true})
     const requestBody = {
       query: `
-      query{
-        events{
-          _id, title, date, description, price,
-        }
-      }`,
+        query{
+          events{
+            _id, title, date, description, price,creator{ _id, email}
+          }
+        }`,
     }
 
     const token = this.context.token
-    fetch("https://events-pro.herokuapp.com/graphql", {
+    fetch("http://localhost:7000/graphql", {
       method: "POST",
       body: JSON.stringify(requestBody),
       headers: {
@@ -110,23 +129,29 @@ export default class EventsPage extends Component {
       })
       .then((resData) => {
         const events = resData.data.events
-        this.setState({events})
+        this.setState({events, isLoading: false})
       })
       .catch((err) => {
         console.log(err)
+        this.setState({isLoading: false})
       })
   }
-  render() {
-    const eventList = this.state.events.map((event) => {
-      return (
-        <Jumbotron fluid key={event._id}>
-          <p className="text-center">{event.title}</p>
-        </Jumbotron>
+
+  showDetailsHandler = (eventId) => {
+    console.log("CLICKED__________", eventId)
+    this.setState((prevState) => {
+      const selectedEvent = prevState.events.find(
+        (event) => event._id === eventId
       )
+      return {selectedEvent: selectedEvent}
     })
+  }
+
+  bookEventHandler = () => {}
+  render() {
     return (
       <>
-        {this.state.showModal && <Backdrop />}
+        {(this.state.showModal || this.state.selectedEvent) && <Backdrop />}
         {this.state.showModal && (
           <Modal
             title="Add Event"
@@ -134,6 +159,7 @@ export default class EventsPage extends Component {
             canConfirm
             onCancle={this.handleCancel}
             onConfirm={this.handleConfirm}
+            confirmText="Confirm"
           >
             <Form onSubmit={this.submitHandler}>
               <FormGroup className="mt-1">
@@ -171,6 +197,22 @@ export default class EventsPage extends Component {
             </Form>
           </Modal>
         )}
+        {this.state.selectedEvent && (
+          <Modal
+            title={this.state.selectedEvent.title}
+            canCancle
+            canConfirm
+            onCancle={this.handleCancel}
+            onConfirm={this.bookEventHandler}
+            confirmText="Book Event"
+          >
+            <h4 className="event-price">${this.state.selectedEvent.price}</h4>
+            <h4 className="event-price">
+              {new Date(this.state.selectedEvent.date).toLocaleDateString()}
+            </h4>
+            <p>{this.state.selectedEvent.description}</p>
+          </Modal>
+        )}
         <Container className="mt-5">
           <Row>
             {this.context.token && (
@@ -183,18 +225,24 @@ export default class EventsPage extends Component {
                 </div>
               </Col>
             )}
-            <Col lg="3" sm="0" />
-            <Col lg={this.context.token ? "4" : "3"} sm="0">
+            <Col lg={this.context.token ? "1" : "2"} sm="0" />
+            <Col lg="8" sm="0">
               {/* <ul className="events-lists">
                 <li className="events-lists-item">Test</li>
                 <li className="events-lists-item">Test</li>
               </ul> */}
-              {/* <Jumbotron fluid>
-                <p className="text-center">
-                  This is a modified jumbotron that occupies the entire
-                </p>
-              </Jumbotron> */}
-              {eventList}
+              {/* <Row>{eventList}</Row> */}
+              {this.state.isLoading ? (
+                <div className="text-center">
+                  <Spinner />
+                </div>
+              ) : (
+                <EventLists
+                  events={this.state.events}
+                  authUserId={this.context.userId}
+                  showDetails={this.showDetailsHandler}
+                />
+              )}
             </Col>
           </Row>
         </Container>

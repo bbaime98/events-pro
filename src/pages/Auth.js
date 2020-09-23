@@ -44,7 +44,7 @@ class Signup extends Component {
       }
     }
 
-    fetch("https://events-pro.herokuapp.com/graphql", {
+    fetch("http://localhost:7000/graphql", {
       method: "POST",
       body: JSON.stringify(requestBody),
       headers: {
