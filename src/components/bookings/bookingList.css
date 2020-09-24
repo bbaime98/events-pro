@@ -1,0 +1,19 @@
+.bookings-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  /*if I're no using boostarp */
+  /* width: 40rem;
+  max-width: 90%;
+  margin: 0 auto */
+}
+
+.bookings-item {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border: 1px solid rgb(241, 7, 85);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

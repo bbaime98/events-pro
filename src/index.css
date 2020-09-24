@@ -24,7 +24,8 @@ code {
 }
 .buttons .button-2,
 .modal-btn,
-.button-event {
+.button-event,
+.booking-item-button {
   background: white;
   font: inherit;
   border: 1px solid rgb(241, 7, 85);
@@ -44,6 +45,7 @@ code {
   z-index: 2;
 }
 .button-event:hover,
+.booking-item-button:hover,
 .modal-btn:hover {
   background: rgb(241, 7, 85);
   border: 1px solid rgb(241, 7, 85);
