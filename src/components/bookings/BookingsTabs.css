@@ -1,0 +1,22 @@
+.tabs-buttons {
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.tabs-buttons button {
+  font: inherit;
+  border: none;
+  background: transparent;
+  color: rgb(3, 62, 73);
+  font-weight: 400;
+  font-size: 1.3rem;
+  padding: 0.25rem 1rem;
+  border-bottom: 2px solid transparent;
+}
+.tabs-buttons button:focus {
+  outline: none;
+}
+.activeTab {
+  border-bottom: 2px solid rgb(241, 7, 85) !important;
+  color: rgb(241, 7, 85) !important;
+}
