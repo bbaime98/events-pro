@@ -1,11 +1,24 @@
 import React, {Component} from "react"
-import {Form, FormGroup, Label, Input, Container, Row, Col} from "reactstrap"
+import {
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Container,
+  Row,
+  Col,
+  Spinner,
+} from "reactstrap"
 import "./auth.css"
 import AuthContext from "../context/authContext"
 import image from "../event.jpg"
+
 class Signup extends Component {
   state = {
     isLogin: true,
+    signedUp: false,
+    loading: false,
+    isEmpty: false,
   }
 
   static contextType = AuthContext
@@ -17,30 +30,41 @@ class Signup extends Component {
   }
   submitHandler = (event) => {
     event.preventDefault()
+    // this.setState({loading: true})
     const email = this.emailEl.current.value
     const password = this.passwordEl.current.value
 
     if (email.trim().length === 0 || password.trim().length === 0) {
+      this.setState({isEmpty: true})
       return
     }
+    this.setState({loading: true, isEmpty: false})
 
     let requestBody = {
       query: `
-      query {
-        login(email: "${email}", password: "${password}"){
+      query LoginQuery($email: String!, $password: String!){
+        login(email: $email, password: $password){
             userId, token, tokenExpiration
         }
       }
       `,
+      variables: {
+        email: email,
+        password: password,
+      },
     }
     if (!this.state.isLogin) {
       requestBody = {
         query: `
-      mutation{
-        createUser(userInput: {email: "${email}", password: "${password}"}){
+      mutation CreateUserMutation($email: String!, $password: String!){
+        createUser(userInput: {email: $email, password: $password}){
           _id, email
         }
       }`,
+        variables: {
+          email: email,
+          password: password,
+        },
       }
     }
 
@@ -58,7 +82,10 @@ class Signup extends Component {
         return res.json()
       })
       .then((resData) => {
-        if (resData.data.login.token) {
+        if (resData.data.createUser && resData.data.createUser._id) {
+          this.setState({signedUp: true, loading: false})
+        }
+        if (resData.data && resData.data.login.token) {
           this.context.login(
             resData.data.login.token,
             resData.data.login.userId,
@@ -125,9 +152,24 @@ class Signup extends Component {
                     innerRef={this.passwordEl}
                   />
                 </FormGroup>
+                {this.state.signedUp && (
+                  <div className="text-success mb-1">
+                    Account Created, Now login
+                  </div>
+                )}
+                {this.state.isEmpty && (
+                  <div className="text-danger mb-1">
+                    Please fill in all fields
+                  </div>
+                )}
                 <div className="text-right buttons mb-4">
                   <button type="submit">
                     {this.state.isLogin ? "Login" : "Signup"}
+                    {this.state.loading ? (
+                      <Spinner size="sm" style={{color: "rgb(3, 62, 73)"}} />
+                    ) : (
+                      ""
+                    )}
                   </button>
                   <button
                     className="button-2"

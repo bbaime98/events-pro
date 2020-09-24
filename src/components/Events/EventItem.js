@@ -1,10 +1,10 @@
 import React from "react"
-import {Col, Jumbotron} from "reactstrap"
+import {Col, Card} from "reactstrap"
 
 export default function EventItem(props) {
   return (
     <Col lg="4">
-      <Jumbotron fluid>
+      <Card className="card_conatiner">
         <div className="pl-3">
           <h5 className="event-title">{props.title}</h5>
           <h4 className="event-price">${props.price}</h4>
@@ -12,7 +12,7 @@ export default function EventItem(props) {
             {new Date(props.date).toLocaleDateString()}
           </h4>
         </div>
-        <div className="pl-3">
+        <div className="pl-3 events_actions">
           {props.userId === props.creatorId ? (
             <p>you are the owner</p>
           ) : (
@@ -24,7 +24,7 @@ export default function EventItem(props) {
             </button>
           )}
         </div>
-      </Jumbotron>
+      </Card>
     </Col>
   )
 }
