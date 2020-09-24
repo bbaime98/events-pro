@@ -59,11 +59,17 @@ export default class EventsPage extends Component {
     const event = {title, price, date, description}
     const requestBody = {
       query: `
-        mutation{
-          createEvent(eventInput: {title: "${title}", description: "${description}", price: ${price}, date: "${date}" } ){
+        mutation CreateEvent( $title: String!, $desc: String!, $price: Float! , $date: String!){
+          createEvent(eventInput: {title: $title, description: $desc, price: $price, date: $date } ){
             _id, title, date, description, price
           }
         }`,
+      variables: {
+        title: title,
+        desc: description,
+        price: price,
+        date: date,
+      },
     }
 
     const token = this.context.token
@@ -159,11 +165,14 @@ export default class EventsPage extends Component {
     }
     const requestBody = {
       query: `
-        mutation{
-          bookEvent(eventId: "${this.state.selectedEvent._id}"){
+        mutation BookEvent($id: ID!){
+          bookEvent(eventId: $id){
             _id, createdAt, updatedAt
           }
         }`,
+      variables: {
+        id: this.state.selectedEvent._id,
+      },
     }
 
     const token = this.context.token
@@ -276,11 +285,6 @@ export default class EventsPage extends Component {
             )}
             <Col lg={this.context.token ? "1" : "2"} sm="0" />
             <Col lg="8" sm="0">
-              {/* <ul className="events-lists">
-                <li className="events-lists-item">Test</li>
-                <li className="events-lists-item">Test</li>
-              </ul> */}
-              {/* <Row>{eventList}</Row> */}
               {this.state.isLoading ? (
                 <div className="text-center">
                   <Spinner />
