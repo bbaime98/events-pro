@@ -2,11 +2,14 @@ import React, {Component} from "react"
 import AuthContext from "../context/authContext"
 import Spinner from "../components/spinner/spinner"
 import BookingList from "../components/bookings/BookingList"
+import BookingsChart from "../components/bookings/BookingsChart"
+import BookingsTabs from "../components/bookings/BookingsTabs"
 
 export default class Booking extends Component {
   state = {
     isLoading: false,
     bookings: [],
+    outputType: "list",
   }
   static contextType = AuthContext
   componentDidMount() {
@@ -25,6 +28,7 @@ export default class Booking extends Component {
               _id
               title,
               date
+              price
             }
           }
         }`,
@@ -96,23 +100,48 @@ export default class Booking extends Component {
         this.setState({isLoading: false})
       })
   }
+
+  switchTabHandler = (outputType) => {
+    if (outputType === "list") {
+      this.setState({outputType: "list"})
+    } else {
+      this.setState({outputType: "chart"})
+    }
+  }
   render() {
-    return (
-      <>
-        <h2 className="text-center" style={{color: "rgb(3, 62, 73)"}}>
-          Your Bookings
-        </h2>
-        {this.state.isLoading ? (
-          <div className="text-center mt-5">
-            <Spinner />
-          </div>
-        ) : (
+    let content = (
+      <div className="text-center mt-5">
+        <Spinner />
+      </div>
+    )
+    if (!this.state.isLoading) {
+      return (
+        <>
+          {/* <h2 className="text-center" style={{color: "rgb(3, 62, 73)"}}>
+            Your Bookings
+          </h2>
+
           <BookingList
             bookings={this.state.bookings}
             onCancel={this.onCancelHandler}
+          /> */}
+          <BookingsTabs
+            switchTabHandler={this.switchTabHandler}
+            tab={this.state.outputType}
           />
-        )}
-      </>
-    )
+          <div>
+            {this.state.outputType === "list" ? (
+              <BookingList
+                bookings={this.state.bookings}
+                onCancel={this.onCancelHandler}
+              />
+            ) : (
+              <BookingsChart bookings={this.state.bookings} />
+            )}
+          </div>
+        </>
+      )
+    }
+    return <>{content}</>
   }
 }
