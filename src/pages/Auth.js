@@ -19,6 +19,7 @@ class Signup extends Component {
     signedUp: false,
     loading: false,
     isEmpty: false,
+    userExist: false,
   }
 
   static contextType = AuthContext
@@ -82,6 +83,9 @@ class Signup extends Component {
         return res.json()
       })
       .then((resData) => {
+        if (resData.errors[0].message === "User already exist.") {
+          this.setState({userExist: true})
+        }
         if (resData.data.createUser && resData.data.createUser._id) {
           this.setState({signedUp: true, loading: false})
         }
@@ -95,8 +99,6 @@ class Signup extends Component {
       })
       .catch((err) => {
         this.setState({loading: false})
-
-        console.log(err)
       })
   }
 
@@ -163,6 +165,9 @@ class Signup extends Component {
                   <div className="text-danger mb-1">
                     Please fill in all fields
                   </div>
+                )}
+                {this.state.userExist && (
+                  <div className="text-danger mb-1">User already exist</div>
                 )}
                 <div className="text-right buttons mb-4">
                   <button type="submit">
